@@ -732,6 +732,10 @@ ngx_strstrn(u_char *s1, char *s2, size_t n)
 {
     u_char  c1, c2;
 
+    if (s1 == NULL || s2 == NULL) {
+        return NULL;
+    }
+
     c2 = *(u_char *) s2++;
 
     do {
@@ -754,6 +758,10 @@ u_char *
 ngx_strcasestrn(u_char *s1, char *s2, size_t n)
 {
     ngx_uint_t  c1, c2;
+
+    if (s1 == NULL || s2 == NULL) {
+        return NULL;
+    }
 
     c2 = (ngx_uint_t) *s2++;
     c2 = (c2 >= 'A' && c2 <= 'Z') ? (c2 | 0x20) : c2;
@@ -786,6 +794,10 @@ u_char *
 ngx_strlcasestrn(u_char *s1, u_char *last, u_char *s2, size_t n)
 {
     ngx_uint_t  c1, c2;
+
+    if (s1 == NULL || last == NULL || s2 == NULL || s1 >= last) {
+        return NULL;
+    }
 
     c2 = (ngx_uint_t) *s2++;
     c2 = (c2 >= 'A' && c2 <= 'Z') ? (c2 | 0x20) : c2;
@@ -1137,7 +1149,7 @@ ngx_hextoi(u_char *line, size_t n)
     u_char     c, ch;
     ngx_int_t  value, cutoff;
 
-    if (n == 0) {
+    if (line == NULL || n == 0) {
         return NGX_ERROR;
     }
 
@@ -1173,6 +1185,14 @@ u_char *
 ngx_hex_dump(u_char *dst, u_char *src, size_t len)
 {
     static u_char  hex[] = "0123456789abcdef";
+
+    if (dst == NULL) {
+        return NULL;
+    }
+
+    if (src == NULL || len == 0) {
+        return dst;
+    }
 
     while (len--) {
         *dst++ = hex[*src >> 4];
@@ -1307,6 +1327,19 @@ ngx_decode_base64_internal(ngx_str_t *dst, ngx_str_t *src, const u_char *basis)
     size_t          len;
     u_char         *d, *s;
 
+    if (dst == NULL || src == NULL || dst->data == NULL) {
+        return NGX_ERROR;
+    }
+
+    if (src->len == 0) {
+        dst->len = 0;
+        return NGX_OK;
+    }
+
+    if (src->data == NULL) {
+        return NGX_ERROR;
+    }
+
     for (len = 0; len < src->len; len++) {
         if (src->data[len] == '=') {
             break;
@@ -1361,6 +1394,10 @@ ngx_utf8_decode(u_char **p, size_t n)
 {
     size_t    len;
     uint32_t  u, i, valid;
+
+    if (p == NULL || *p == NULL || n == 0) {
+        return 0xffffffff;
+    }
 
     u = **p;
 
@@ -1423,6 +1460,10 @@ ngx_utf8_length(u_char *p, size_t n)
 {
     u_char  c, *last;
     size_t  len;
+
+    if (p == NULL || n == 0) {
+        return 0;
+    }
 
     last = p + n;
 
